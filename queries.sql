@@ -104,8 +104,8 @@ order by age_category;
 --6.2. customers_by_month.csv с количеством покупателей и выручкой по месяцам
 select 
 	to_char(s.sale_date, 'YYYY-MM') as selling_month,  -- Выводим месяц и год из даты
-	count(s.customer_id) as total_customers,           -- Считаем количество покупателей
-	round(sum(s.quantity*p.price), 0) as income        -- Считаем общую выручку
+	count(distinct s.customer_id) as total_customers,           -- Считаем количество покупателей
+	floor(sum(s.quantity*p.price)) as income        -- Считаем общую выручку
 from sales s
 left join products p
 on p.product_id = s.product_id                --Присоединяем таблицу с продуктами, чтобы взять поле с ценой
@@ -115,22 +115,28 @@ order by selling_month;
 -- ___________________________________________________________________
 
 --6.3. special_offer.csv с покупателями первая покупка которых пришлась на время проведения специальных акций
-select
-	concat(c.first_name, ' ', c.last_name) as customer,   --Выводим имя и фамилию покупателя 
-	min(s.sale_date) as sale_date,						  --Выводим самую первую покупку
-	concat(e.first_name, ' ', e.last_name) as seller     --Выводим имя и фамилию продавца 
-from customers c
-left join sales s
-on c.customer_id = s.customer_id
-left join employees e                     --Присоединяем друг к другу все 4 таблицы
-on e.employee_id = s.sales_person_id
-left join products p
-on p.product_id = s.product_id
-
-where s.sale_date is NOT null 				--Убираем NULL значения и учитываем только те строки, где был куплен акционный товар
-	  and p.price = 0
-group by customer, seller, c.customer_id
-
-order by c.customer_id;
-
+with tbl_answ as (
+			select
+				row_number() over(partition by concat(c.first_name, ' ', c.last_name) order by s.sale_date) as rn, - через окно нумеруем покупки для кадого покупателя по дате
+				concat(c.first_name, ' ', c.last_name) as customer,   --Выводим имя и фамилию покупателя 
+				s.sale_date,										  --Выводим самую первую покупку
+				concat(e.first_name, ' ', e.last_name) as seller      --Выводим имя и фамилию продавца 
+			from customers c
+			left join sales s
+			on c.customer_id = s.customer_id
+			left join employees e                     --Присоединяем друг к другу все 4 таблицы
+			on e.employee_id = s.sales_person_id
+			left join products p
+			on p.product_id = s.product_id
+			
+			where s.sale_date is NOT null 				--Убираем NULL значения и учитываем только те строки, где был куплен акционный товар
+				  and p.price = 0
+		
+				  )
+select 
+	customer,
+	sale_date,
+	seller
+from tbl_answ
+where rn = 1                                     
 ___________________________________________________________________
