@@ -1,5 +1,4 @@
-select 
-	count(*) as customers_count
+select count(*) customers_count
 from customers;
 
 -- В данном запросе мы считаем общее количество строк по имени. Так же можно посчитать по count(*). Дубликатов нет.
@@ -7,20 +6,17 @@ from customers;
 -- ___________________________________________________________________
 
 --5.1. top_10_total_income.csv. Десятка лучших продавцов.
-	select 
-		concat(e.first_name, ' ', e.last_name) as seller,    -- Конкатенация имени и фамилии 
-		count(s.quantity) as operations,					 -- Считаем количество сделок 
-		floor(sum(s.quantity * p.price)) as income					 -- Перемножаем в каждой строке количество товара, а потом суммируем все строки у каждого продавца
-	from employees e
+select 
+	concat(e.first_name, ' ', e.last_name) as seller,    -- Конкатенация имени и фамилии 
+	count(s.quantity) as operations,					 -- Считаем количество сделок 
+	floor(sum(s.quantity * p.price)) as income					 -- Перемножаем в каждой строке количество товара, а потом суммируем все строки у каждого продавца
+from employees e
 	
-	left join sales s                                        -- Создаём одну общую таблицу со всеми нужными данными
-	on e.employee_id = s.sales_person_id
+left join sales s on e.employee_id = s.sales_person_id   -- Создаём одну общую таблицу со всеми нужными данными
+left join products p on s.product_id = p.product_id      -- Создаём одну общую таблицу со всеми нужными данными
 	
-	left join products p                                     -- Создаём одну общую таблицу со всеми нужными данными
-	on s.product_id = p.product_id
-	
-	group by e.first_name, e.last_name                      -- Группируем по имени и фамилии, чтобы применить агрегирующие функции
-	order by income desc nulls last limit 10; 				 -- Сортируем по условиям и выводим топ-10 по выручке
+group by e.first_name, e.last_name                      -- Группируем по имени и фамилии, чтобы применить агрегирующие функции
+order by income desc nulls last limit 10; 				 -- Сортируем по условиям и выводим топ-10 по выручке
 
 -- ___________________________________________________________________
 --5.2. lowest_average_income.csv.  Продавцы, чья средняя выручка за сделку меньше средней выручки за сделку по всем продавцам.
