@@ -2,17 +2,17 @@ select count(*) as customers_count
 from customers;
 --5.1. top_10_total_income.csv. Десятка лучших продавцов.
 select
-		concat(e.first_name, ' ', e.last_name) as seller,
-		count(s.quantity) as operations,
-		floor(sum(s.quantity * p.price)) as income
+	concat(e.first_name, ' ', e.last_name) as seller,
+	count(s.quantity) as operations,
+	floor(sum(s.quantity * p.price)) as income
 from employees as e
 left join sales as s on e.employee_id = s.sales_person_id
 left join products as p on s.product_id = p.product_id
 group by e.first_name, e.last_name
 order by income desc nulls last limit 10;
 --5.2. lowest_average_income.csv.
-with avg_inc_saller as
-(select
+with avg_inc_saller as (
+select
 		concat(e.first_name, ' ', e.last_name) as seller,
 		floor(sum(s.quantity * p.price) / count(s.quantity)) as average_income,
 		round(avg(round(sum(s.quantity * p.price) / count(s.quantity),0)) over (), 0) as avg_all_income
@@ -74,8 +74,8 @@ left join products as p on p.product_id = s.product_id
 group by selling_month
 order by selling_month;
 --6.3. special_offer.csv с покупателями первая покупка которых пришлась на время проведения специальных акций
-with tbl_answ as
-			(select
+with tbl_answ as (
+			select
 				row_number() over(partition by concat(c.first_name, ' ', c.last_name) order by s.sale_date) as rn,
 				concat(c.first_name, ' ', c.last_name) as customer,
 				s.sale_date,
