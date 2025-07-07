@@ -15,13 +15,14 @@ with avg_inc_saller as (
     select
         concat(e.first_name, ' ', e.last_name) as seller,
         floor(sum(s.quantity * p.price) / count(s.quantity)) as average_income,
-        round(avg(round(sum(s.quantity * p.price) / count(s.quantity) ,0)) over () ,0) as avg_all_income
+        round(avg(round(sum(s.quantity * p.price) / 
+                        count(s.quantity),0)) over () , 0) as avg_all_income
     from employees as e
     left join sales as s on e.employee_id = s.sales_person_id
     left join products as p on s.product_id = p.product_id
     group by e.first_name, e.last_name
     order by average_income nulls last
-    )
+)
 
 select
     seller,
@@ -46,7 +47,7 @@ order by case
     when lower(trim(to_char(s.sale_date, 'Day'))) = 'friday' then 5
     when lower(trim(to_char(s.sale_date, 'Day'))) = 'saturday' then 6
     when lower(trim(to_char(s.sale_date, 'Day'))) = 'sunday' then 7
-		 end, 
+end,
 seller;
 --6.1. age_groups.csv с возрастными группами покупателей
 select
@@ -57,14 +58,14 @@ where age between 16 and 25
 group by age_category
 union
 select
-    '26-40' as age_category,
+    '26-40',
     count(age)
 from customers
 where age between 26 and 40
 group by age_category
-union 
+union
 select
-    '40+' as age_category,
+    '40+',
     count(age)
 from customers
 where age > 40
@@ -74,7 +75,7 @@ order by age_category;
 select
     to_char(s.sale_date, 'YYYY-MM') as selling_month,
     count(distinct s.customer_id) as total_customers,
-    floor(sum(s.quantity*p.price)) as income
+    floor(sum(s.quantity * p.price)) as income
 from sales as s
 left join products as p on p.product_id = s.product_id
 group by selling_month
@@ -82,7 +83,8 @@ order by selling_month;
 --6.3. special_offer.csv
 with tbl_answ as (
     select
-        row_number() over(partition by concat(c.first_name, ' ', c.last_name) order by s.sale_date) as rn,
+        row_number() over (partition by concat(c.first_name, ' ', c.last_name)
+                                                        order by s.sale_date) as rn,
         concat(c.first_name, ' ', c.last_name) as customer,
         s.sale_date,
         concat(e.first_name, ' ', e.last_name) as seller
