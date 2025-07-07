@@ -15,8 +15,8 @@ with avg_inc_saller as (
     select
         concat(e.first_name, ' ', e.last_name) as seller,
         floor(sum(s.quantity * p.price) / count(s.quantity)) as average_income,
-        round(avg(round(sum(s.quantity * p.price) / 
-                        count(s.quantity),0)) over () , 0) as avg_all_income
+        round(avg(round(sum(s.quantity * p.price) /
+             count(s.quantity),0)) over (), 0) as avg_all_income
     from employees as e
     left join sales as s on e.employee_id = s.sales_person_id
     left join products as p on s.product_id = p.product_id
@@ -58,15 +58,15 @@ where age between 16 and 25
 group by age_category
 union
 select
-    '26-40',
-    count(age)
+    '26-40' as age_category,
+    count(age) as age_count
 from customers
 where age between 26 and 40
 group by age_category
 union
 select
-    '40+',
-    count(age)
+    '40+' as age_category,
+    count(age) as age_count
 from customers
 where age > 40
 group by age_category
@@ -77,14 +77,14 @@ select
     count(distinct s.customer_id) as total_customers,
     floor(sum(s.quantity * p.price)) as income
 from sales as s
-left join products as p on p.product_id = s.product_id
+left join products as p on s.product_id = p.product_id
 group by selling_month
 order by selling_month;
 --6.3. special_offer.csv
 with tbl_answ as (
     select
         row_number() over (partition by concat(c.first_name, ' ', c.last_name)
-                                                        order by s.sale_date) as rn,
+           order by s.sale_date) as rn,
         concat(c.first_name, ' ', c.last_name) as customer,
         s.sale_date,
         concat(e.first_name, ' ', e.last_name) as seller
