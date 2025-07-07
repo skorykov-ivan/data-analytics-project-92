@@ -1,9 +1,9 @@
 select count(*) as customers_count
 from customers;
 --5.1. top_10_total_income.csv. Десятка лучших продавцов.
-select concat(e.first_name, ' ', e.last_name) as seller, 
-count(s.quantity) as operations, 
-floor(sum(s.quantity * p.price)) as income
+select concat(e.first_name, ' ', e.last_name) as seller,
+	count(s.quantity) as operations,
+	floor(sum(s.quantity * p.price)) as income
 from employees as e
 left join sales as s on e.employee_id = s.sales_person_id
 left join products as p on s.product_id = p.product_id
@@ -20,7 +20,7 @@ left join products as p on s.product_id = p.product_id
 group by e.first_name, e.last_name
 order by average_income nulls last)
 select seller,
-average_income
+	average_income
 from avg_inc_saller
 where average_income < avg_all_income;-
 --5.3.day_of_the_week_income.csv.
