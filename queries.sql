@@ -12,20 +12,22 @@ group by e.first_name, e.last_name
 order by income desc nulls last limit 10;
 --5.2. lowest_average_income.csv.
 with avg_inc_saller as (
-select
+    select
         concat(e.first_name, ' ', e.last_name) as seller,
         floor(sum(s.quantity * p.price) / count(s.quantity)) as average_income,
-        round(avg(round(sum(s.quantity * p.price) / count(s.quantity),0)) over (), 0) as avg_all_income
-from employees as e
-left join sales as s on e.employee_id = s.sales_person_id		
-left join products as p on s.product_id = p.product_id
-group by e.first_name, e.last_name
-order by average_income nulls last)
+        round(avg(round(sum(s.quantity * p.price) / count(s.quantity),0)) over (),0) as avg_all_income
+    from employees as e
+    left join sales as s on e.employee_id = s.sales_person_id
+    left join products as p on s.product_id = p.product_id
+    group by e.first_name, e.last_name
+    order by average_income nulls last
+    )
+    
 select
-		seller,
-		average_income
+    seller,
+    average_income
 from avg_inc_saller
-where average_income < avg_all_income;-
+where average_income < avg_all_income;
 --5.3.day_of_the_week_income.csv.
 select
     concat(e.first_name, ' ', e.last_name) as seller,
