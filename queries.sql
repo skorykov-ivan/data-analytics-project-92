@@ -2,9 +2,9 @@ select count(*) as customers_count
 from customers;
 --5.1. top_10_total_income.csv. Десятка лучших продавцов.
 select
-	concat(e.first_name, ' ', e.last_name) as seller,
-	count(s.quantity) as operations,
-	floor(sum(s.quantity * p.price)) as income
+    concat(e.first_name, ' ', e.last_name) as seller,
+    count(s.quantity) as operations,
+    floor(sum(s.quantity * p.price)) as income
 from employees as e
 left join sales as s on e.employee_id = s.sales_person_id
 left join products as p on s.product_id = p.product_id
@@ -13,9 +13,9 @@ order by income desc nulls last limit 10;
 --5.2. lowest_average_income.csv.
 with avg_inc_saller as (
 select
-		concat(e.first_name, ' ', e.last_name) as seller,
-		floor(sum(s.quantity * p.price) / count(s.quantity)) as average_income,
-		round(avg(round(sum(s.quantity * p.price) / count(s.quantity),0)) over (), 0) as avg_all_income
+        concat(e.first_name, ' ', e.last_name) as seller,
+        floor(sum(s.quantity * p.price) / count(s.quantity)) as average_income,
+        round(avg(round(sum(s.quantity * p.price) / count(s.quantity),0)) over (), 0) as avg_all_income
 from employees as e
 left join sales as s on e.employee_id = s.sales_person_id		
 left join products as p on s.product_id = p.product_id
@@ -28,9 +28,9 @@ from avg_inc_saller
 where average_income < avg_all_income;-
 --5.3.day_of_the_week_income.csv.
 select
-		concat(e.first_name, ' ', e.last_name) as seller,
-		lower(trim(to_char(s.sale_date, 'Day'))) as day_of_week,
-		floor(sum(s.quantity * p.price)) as income
+    concat(e.first_name, ' ', e.last_name) as seller,
+    lower(trim(to_char(s.sale_date, 'Day'))) as day_of_week,
+    floor(sum(s.quantity * p.price)) as income
 from employees as e
 left join sales as s on e.employee_id = s.sales_person_id
 left join products as p on s.product_id = p.product_id
