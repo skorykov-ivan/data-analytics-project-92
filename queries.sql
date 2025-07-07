@@ -1,7 +1,8 @@
 select count(*) as customers_count
 from customers;
 --5.1. top_10_total_income.csv. Десятка лучших продавцов.
-select concat(e.first_name, ' ', e.last_name) as seller,
+select
+	concat(e.first_name, ' ', e.last_name) as seller,
 	count(s.quantity) as operations,
 	floor(sum(s.quantity * p.price)) as income
 from employees as e
