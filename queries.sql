@@ -15,10 +15,11 @@ with avg_inc_saller as (
     select
         concat(e.first_name, ' ', e.last_name) as seller,
         floor(
-            sum(s.quantity * p.price) / count(s.quantity)) as average_income,
-            round(avg(round(sum(s.quantity * p.price) / 
-            count(s.quantity),0)) over (),0
-       ) as avg_all_income
+            sum(s.quantity * p.price) / count(s.quantity)
+        ) as average_income,
+        round(
+        avg(round(sum(s.quantity * p.price) / count(s.quantity), 0)) over (), 0
+        ) as avg_all_income
     from employees as e
     left join sales as s on e.employee_id = s.sales_person_id
     left join products as p on s.product_id = p.product_id
@@ -86,9 +87,8 @@ order by selling_month;
 with tbl_answ as (
     select
         row_number() over (
-            partition by concat(c.first_name, ' ', c.last_name)
-            order by s.sale_date
-    ) as rn,
+            partition by concat(c.first_name, ' ', c.last_name) order by s.sale_date
+        ) as rn,
         concat(c.first_name, ' ', c.last_name) as customer,
         s.sale_date,
         concat(e.first_name, ' ', e.last_name) as seller
