@@ -14,9 +14,11 @@ order by income desc nulls last limit 10;
 with avg_inc_saller as (
     select
         concat(e.first_name, ' ', e.last_name) as seller,
-        floor(sum(s.quantity * p.price) / count(s.quantity)) as average_income,
-        round(avg(round(sum(s.quantity * p.price) /
-             count(s.quantity),0)) over (), 0) as avg_all_income
+        floor(
+            sum(s.quantity * p.price) / count(s.quantity)) as average_income,
+            round(avg(round(sum(s.quantity * p.price) / 
+            count(s.quantity),0)) over (),0
+       ) as avg_all_income
     from employees as e
     left join sales as s on e.employee_id = s.sales_person_id
     left join products as p on s.product_id = p.product_id
@@ -83,16 +85,18 @@ order by selling_month;
 --6.3. special_offer.csv
 with tbl_answ as (
     select
-        row_number() over (partition by concat(c.first_name, ' ', c.last_name)
-           order by s.sale_date) as rn,
+        row_number() over (
+            partition by concat(c.first_name, ' ', c.last_name)
+            order by s.sale_date
+    ) as rn,
         concat(c.first_name, ' ', c.last_name) as customer,
         s.sale_date,
         concat(e.first_name, ' ', e.last_name) as seller
     from customers as c
     left join sales as s on c.customer_id = s.customer_id
-    left join employees as e on e.employee_id = s.sales_person_id
-    left join products as p on p.product_id = s.product_id
-    where s.sale_date is NOT null and p.price = 0
+    left join employees as e on s.sales_person_id = e.employee_id
+    left join products as p on s.product_id = p.product_id
+    where s.sale_date is not null and p.price = 0
     order by s.customer_id
 )
 
