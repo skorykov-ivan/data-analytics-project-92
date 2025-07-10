@@ -98,7 +98,7 @@ with tbl_answ as (
     left join sales as s on c.customer_id = s.customer_id
     left join employees as e on s.sales_person_id = e.employee_id
     left join products as p on s.product_id = p.product_id
-    where s.sale_date is not null and p.price = 0
+    where p.price = 0 and s.sale_date is not null
     order by s.customer_id
 )
 
