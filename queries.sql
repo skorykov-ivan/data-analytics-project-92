@@ -87,8 +87,8 @@ order by selling_month;
 --6.3. special_offer.csv
 with tbl_answ as (
     select
-        concat(c.first_name, ' ', c.last_name) as customer,
         s.sale_date,
+        concat(c.first_name, ' ', c.last_name) as customer,
         concat(e.first_name, ' ', e.last_name) as seller,
         row_number() over (
             partition by c.first_name, c.last_name
