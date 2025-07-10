@@ -19,7 +19,7 @@ with avg_inc_saller as (
         ) as average_income,
         round(
             avg(round(sum(s.quantity * p.price) / count(s.quantity), 0))
-            over (), 0
+                over (), 0
         ) as avg_all_income
     from employees as e
     left join sales as s on e.employee_id = s.sales_person_id
@@ -85,21 +85,30 @@ left join products as p on s.product_id = p.product_id
 group by selling_month
 order by selling_month;
 --6.3. special_offer.csv
-with tbl_answ as (
+with base_data as (
     select
-        concat(c.first_name, ' ', c.last_name) as customer,
+        c.first_name,
+        c.last_name,
         s.sale_date,
-        concat(e.first_name, ' ', e.last_name) as seller,
-        row_number() over (
-            partition by concat(c.first_name, ' ', c.last_name)
-            order by s.sale_date
-        ) as rn,
+        e.first_name as seller_first_name,
+        e.last_name as seller_last_name
     from customers as c
     left join sales as s on c.customer_id = s.customer_id
     left join employees as e on s.sales_person_id = e.employee_id
     left join products as p on s.product_id = p.product_id
     where s.sale_date is not null and p.price = 0
     order by s.customer_id
+),
+tbl_answ as (
+    select
+        row_number() over (
+            partition by first_name, last_name
+            order by sale_date
+        ) as rn,
+        concat(first_name, ' ', last_name) as customer,
+        sale_date,
+        concat(seller_first_name, ' ', seller_last_name) as seller
+    from base_data
 )
 
 select
