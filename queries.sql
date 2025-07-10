@@ -91,7 +91,7 @@ with tbl_answ as (
         s.sale_date,
         concat(e.first_name, ' ', e.last_name) as seller,
         row_number() over (
-            partition by concat(c.first_name, ' ', c.last_name)
+            partition by c.first_name, c.last_name
             order by s.sale_date
         ) as rn
     from customers as c
