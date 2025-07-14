@@ -16,7 +16,7 @@ with avg_inc_saller as (
         concat(e.first_name, ' ', e.last_name) as seller,
         floor(
             avg(s.quantity * p.price)
-            over (partition by e.first_name, e.last_name)
+                over (partition by e.first_name, e.last_name)
         ) as average_income,
         floor(avg(s.quantity * p.price) over ()) as avg_all_income
     from sales as s
