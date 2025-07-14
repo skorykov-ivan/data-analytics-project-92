@@ -14,7 +14,9 @@ order by income desc nulls last limit 10;
 with avg_inc_saller as (
     select distinct
         concat(e.first_name, ' ', e.last_name) as seller,
-        floor(avg(s.quantity * p.price) over (partition by e.first_name, e.last_name)) as average_income,
+        floor(avg(s.quantity * p.price) over (
+            partition by e.first_name, e.last_name)
+        ) as average_income,
         floor(avg(s.quantity * p.price) over ()) as avg_all_income
     from sales as s
     left join employees as e on s.sales_person_id = e.employee_id
@@ -44,7 +46,7 @@ order by case lower(trim(to_char(s.sale_date, 'day')))
     when 'friday' then 5
     when 'saturday' then 6
     when 'sunday' then 7
-        end, seller;
+end, seller;
 --6.1. age_groups.csv с возрастными группами покупателей
 select
     '16-25' as age_category,
