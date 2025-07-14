@@ -5,26 +5,21 @@ select
     concat(e.first_name, ' ', e.last_name) as seller,
     count(s.quantity) as operations,
     floor(sum(s.quantity * p.price)) as income
-from employees as e
-left join sales as s on e.employee_id = s.sales_person_id
+from sales as s
+left join employees as e on s.sales_person_id = e.employee_id
 left join products as p on s.product_id = p.product_id
 group by e.first_name, e.last_name
 order by income desc nulls last limit 10;
 --5.2. lowest_average_income.csv.
 with avg_inc_saller as (
     select
-        concat(e.first_name, ' ', e.last_name) as seller,
-        floor(
-            sum(s.quantity * p.price) / count(s.quantity)
-        ) as average_income,
-        round(
-            avg(round(sum(s.quantity * p.price) / count(s.quantity), 0))
-                over (), 0
-        ) as avg_all_income
-    from employees as e
-    left join sales as s on e.employee_id = s.sales_person_id
+        distinct concat(e.first_name, ' ', e.last_name) as seller,
+        floor(avg(s.quantity * p.price)
+            over (partition by e.first_name, e.last_name)) as average_income,
+        floor(avg(s.quantity * p.price) over ()) as avg_all_income
+    from sales as s
+    left join employees as e on s.sales_person_id = e.employee_id
     left join products as p on s.product_id = p.product_id
-    group by e.first_name, e.last_name
     order by average_income nulls last
 )
 
@@ -36,22 +31,21 @@ where average_income < avg_all_income;
 --5.3.day_of_the_week_income.csv.
 select
     concat(e.first_name, ' ', e.last_name) as seller,
-    lower(trim(to_char(s.sale_date, 'Day'))) as day_of_week,
+    lower(trim(to_char(s.sale_date, 'day'))) as day_of_week,
     floor(sum(s.quantity * p.price)) as income
-from employees as e
-left join sales as s on e.employee_id = s.sales_person_id
+from sales as s
+left join employees as e on s.sales_person_id = e.employee_id
 left join products as p on s.product_id = p.product_id
 group by e.first_name, e.last_name, day_of_week
-having floor(sum(s.quantity * p.price)) is not null
-order by case
-    when lower(trim(to_char(s.sale_date, 'Day'))) = 'monday' then 1
-    when lower(trim(to_char(s.sale_date, 'Day'))) = 'tuesday' then 2
-    when lower(trim(to_char(s.sale_date, 'Day'))) = 'wednesday' then 3
-    when lower(trim(to_char(s.sale_date, 'Day'))) = 'thursday' then 4
-    when lower(trim(to_char(s.sale_date, 'Day'))) = 'friday' then 5
-    when lower(trim(to_char(s.sale_date, 'Day'))) = 'saturday' then 6
-    when lower(trim(to_char(s.sale_date, 'Day'))) = 'sunday' then 7
-end,
+order by case lower(trim(to_char(s.sale_date, 'day')))
+    when 'monday' then 1
+    when 'tuesday' then 2
+    when 'wednesday' then 3
+    when 'thursday' then 4
+    when 'friday' then 5
+    when 'saturday' then 6
+    when 'sunday' then 7
+        end, 
 seller;
 --6.1. age_groups.csv с возрастными группами покупателей
 select
@@ -94,8 +88,8 @@ with tbl_answ as (
             partition by c.first_name, c.last_name
             order by s.sale_date
         ) as rn
-    from customers as c
-    left join sales as s on c.customer_id = s.customer_id
+    from sales as s
+    left join customers as c on s.customer_id = c.customer_id
     left join employees as e on s.sales_person_id = e.employee_id
     left join products as p on s.product_id = p.product_id
     where p.price = 0 and s.sale_date is not null
