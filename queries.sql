@@ -31,25 +31,15 @@ select
 from avg_inc_saller
 where average_income < avg_all_income;
 --5.3.day_of_the_week_income.csv.
-with tbl_answ as (
-    select
-        concat(e.first_name, ' ', e.last_name) as seller,
-        lower(trim(to_char(s.sale_date, 'Day'))) as day_of_week,
-        floor(sum(s.quantity * p.price)) as income,
-        date_part('isodow', s.sale_date) as num_day
-    from employees as e
-    left join sales as s on e.employee_id = s.sales_person_id
-    left join products as p on s.product_id = p.product_id
-    group by e.first_name, e.last_name, day_of_week, num_day
-    having floor(sum(s.quantity * p.price)) is not null
-    order by num_day
-)
-
 select
-    seller,
-    day_of_week,
-    income
-from tbl_answ;
+    concat(e.first_name, ' ', e.last_name) as seller,
+    to_char(s.sale_date, 'day') as day_of_week,
+    floor(sum(s.quantity * p.price)) as income
+from employees as e
+left join sales as s on e.employee_id = s.sales_person_id
+left join products as p on s.product_id = p.product_id
+group by e.first_name, e.last_name, day_of_week, date_part('isodow', s.sale_date)
+order by date_part('isodow', s.sale_date)
 --6.1. age_groups.csv с возрастными группами покупателей
 select
     case
