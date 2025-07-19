@@ -38,7 +38,8 @@ select
 from employees as e
 left join sales as s on e.employee_id = s.sales_person_id
 left join products as p on s.product_id = p.product_id
-group by e.first_name, e.last_name, day_of_week, date_part('isodow', s.sale_date)
+group by e.first_name, e.last_name, day_of_week,
+         date_part('isodow', s.sale_date)
 order by date_part('isodow', s.sale_date)
 --6.1. age_groups.csv с возрастными группами покупателей
 select
