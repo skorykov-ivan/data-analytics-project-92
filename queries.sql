@@ -40,9 +40,10 @@ left join sales as s on e.employee_id = s.sales_person_id
 left join products as p on s.product_id = p.product_id
 group by
     e.first_name, e.last_name, day_of_week, date_part('isodow', s.sale_date)
-order by date_part('isodow', s.sale_date)
+order by date_part('isodow', s.sale_date);
 --6.1. age_groups.csv с возрастными группами покупателей
-select case
+select 
+    case
         when age between 16 and 25 then '16-25'
         when age between 26 and 40 then '26-40'
         when age > 40 then '40+'
