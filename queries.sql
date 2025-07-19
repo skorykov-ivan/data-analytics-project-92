@@ -31,44 +31,40 @@ select
 from avg_inc_saller
 where average_income < avg_all_income;
 --5.3.day_of_the_week_income.csv.
+with tbl_answ as (
+    select
+	    concat(e.first_name, ' ', e.last_name) as seller,
+        lower(trim(to_char(s.sale_date, 'Day'))) as day_of_week,
+        floor(sum(s.quantity * p.price)) as income,
+        date_part('isodow', s.sale_date) as num_day
+    from employees as e	
+    left join sales as s on e.employee_id = s.sales_person_id
+    left join products as p on s.product_id = p.product_id	
+    group by e.first_name, e.last_name, day_of_week, num_day
+    having floor(sum(s.quantity * p.price)) is not null
+    order by num_day
+)
+
 select
-    concat(e.first_name, ' ', e.last_name) as seller,
-    lower(trim(to_char(s.sale_date, 'day'))) as day_of_week,
-    floor(sum(s.quantity * p.price)) as income
-from sales as s
-left join employees as e on s.sales_person_id = e.employee_id
-left join products as p on s.product_id = p.product_id
-group by e.first_name, e.last_name, day_of_week
-order by case lower(trim(to_char(s.sale_date, 'day')))
-    when 'monday' then 1
-    when 'tuesday' then 2
-    when 'wednesday' then 3
-    when 'thursday' then 4
-    when 'friday' then 5
-    when 'saturday' then 6
-    when 'sunday' then 7
-end, seller;
+    seller,
+    day_of_week,
+    income
+from tbl_answ;
 --6.1. age_groups.csv с возрастными группами покупателей
 select
-    '16-25' as age_category,
-    count(age) as age_count
-from customers
-where age between 16 and 25
-group by age_category
-union
-select
-    '26-40' as age_category,
-    count(age) as age_count
-from customers
-where age between 26 and 40
-group by age_category
-union
-select
-    '40+' as age_category,
-    count(age) as age_count
-from customers
-where age > 40
-group by age_category
+    case
+        when age between 16 and 25 then '16-25'
+        when age between 26 and 40 then '26-40'
+        when age > 40 then '40+'
+    end as age_category,
+    count(*) AS age_count
+FROM customers
+group by
+    case
+        when age between 16 and 25 then '16-25'
+        when age between 26 and 40 then '26-40'
+        when age > 40 then '40+'
+    end
 order by age_category;
 --6.2. customers_by_month.csv
 select
