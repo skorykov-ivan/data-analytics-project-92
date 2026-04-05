@@ -1,2 +1,10 @@
-### Hexlet tests and linter status:
-[![Actions Status](https://github.com/skorykov-ivan/data-analytics-project-92/actions/workflows/hexlet-check.yml/badge.svg)](https://github.com/skorykov-ivan/data-analytics-project-92/actions)
+# **Проект 1** — Анализ продаж торговой площадки
+## **Стек:** PostgreSQL, Apache Superset (Preset), DBeaver, GitHub
+
+## GitHub: data-analytics-project-92
+
+1. Подключился к PostgreSQL-базе данных торговой площадки (4 связанные таблицы: customers, employees, products, sales) и написал аналитические SQL-запросы с использованием оконных функций, JOIN, CTE и CASE.
+2. Составил три аналитических отчёта по сотрудникам отдела продаж: топ-10 по суммарной выручке, список продавцов с выручкой ниже средней, разбивка выручки по дням недели.
+3. Составил три отчёта по покупателям: возрастные группы (16–25, 26–40, 40+), динамика покупателей и выручки по месяцам, покупатели, чья первая покупка пришлась на период акции.
+4. Собрал интерактивный дашборд в Apache Superset (Preset) на основе шести CSV-файлов с результатами запросов.
+5. Подготовил презентацию с выводами и рекомендациями для нетехнической аудитории, включая ссылку на дашборд.
